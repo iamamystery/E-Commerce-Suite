@@ -5,17 +5,26 @@ const CartContext = createContext()
 const CART_STORAGE_KEY = 'luxecart_cart'
 
 export const CartProvider = ({ children }) => {
-  const [cartItems, setCartItems] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem(CART_STORAGE_KEY)
-      return saved ? JSON.parse(saved) : []
-    }
-    return []
-  })
+  const [cartItems, setCartItems] = useState([])
+  const [isLoaded, setIsLoaded] = useState(false)
 
   useEffect(() => {
-    localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cartItems))
-  }, [cartItems])
+    try {
+      const saved = localStorage.getItem(CART_STORAGE_KEY)
+      if (saved) {
+        setCartItems(JSON.parse(saved))
+      }
+    } catch (e) {
+      console.error('Error loading cart:', e)
+    }
+    setIsLoaded(true)
+  }, [])
+
+  useEffect(() => {
+    if (isLoaded) {
+      localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cartItems))
+    }
+  }, [cartItems, isLoaded])
 
   const addToCart = useCallback((product, quantity = 1) => {
     setCartItems(prev => {
@@ -63,7 +72,8 @@ export const CartProvider = ({ children }) => {
       updateQuantity,
       clearCart,
       cartTotal,
-      cartCount
+      cartCount,
+      isLoaded
     }}>
       {children}
     </CartContext.Provider>
