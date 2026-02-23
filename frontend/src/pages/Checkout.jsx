@@ -5,6 +5,9 @@ import { CreditCard, Truck, Shield, Check, ChevronRight, Lock } from 'lucide-rea
 import { useCart } from '../context/CartContext'
 import toast from 'react-hot-toast'
 import AnimatedBackground from '../components/AnimatedBackground'
+import { storage, generateId, calculateOrderTotals } from '../utils/storage'
+
+const ORDERS_KEY = 'luxecart_orders'
 
 const Checkout = () => {
   const navigate = useNavigate()
@@ -34,12 +37,50 @@ const Checkout = () => {
       setStep(step + 1)
     } else {
       setIsProcessing(true)
+      
+      // Create order object
+      const order = {
+        _id: generateId(),
+        orderItems: cartItems.map(item => ({
+          product: item._id,
+          name: item.name,
+          quantity: item.quantity,
+          price: item.price,
+          image: item.image
+        })),
+        shippingAddress: {
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          address: formData.address,
+          city: formData.city,
+          zipCode: formData.zipCode
+        },
+        paymentInfo: {
+          method: 'card',
+          status: 'completed',
+          paidAt: new Date().toISOString()
+        },
+        prices: {
+          itemsPrice: subtotal,
+          shippingPrice: shipping,
+          taxPrice: tax,
+          totalPrice: total
+        },
+        status: 'processing',
+        isPaid: true,
+        createdAt: new Date().toISOString()
+      }
+      
+      // Save to localStorage
+      const existingOrders = storage.get(ORDERS_KEY, [])
+      storage.set(ORDERS_KEY, [order, ...existingOrders])
+      
       setTimeout(() => {
         setIsProcessing(false)
         clearCart()
-        toast.success('Order placed successfully!')
+        toast.success('Order placed successfully! Order ID: ' + order._id.slice(-6))
         navigate('/')
-      }, 3000)
+      }, 2000)
     }
   }
 

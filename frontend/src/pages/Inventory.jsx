@@ -1,17 +1,12 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Plus, Edit2, Trash2, Search, Package, TrendingUp, AlertTriangle, BarChart3, DollarSign, ShoppingBag } from 'lucide-react'
+import { Plus, Edit2, Trash2, Search, Package, TrendingUp, AlertTriangle, DollarSign, ShoppingBag } from 'lucide-react'
 import toast from 'react-hot-toast'
 import AnimatedBackground from '../components/AnimatedBackground'
+import { products as initialProducts } from '../data'
+import { storage, generateId } from '../utils/storage'
 
-const initialProducts = [
-  { _id: "1", name: "Premium Wireless Headphones", price: 299, stock: 15, category: "Electronics", sales: 234, status: "active" },
-  { _id: "2", name: "Luxury Leather Watch", price: 599, stock: 8, category: "Accessories", sales: 156, status: "active" },
-  { _id: "3", name: "Designer Sunglasses", price: 249, stock: 23, category: "Accessories", sales: 189, status: "active" },
-  { _id: "4", name: "Smart Home Hub", price: 199, stock: 5, category: "Electronics", sales: 312, status: "low_stock" },
-  { _id: "5", name: "Minimalist Desk Lamp", price: 129, stock: 0, category: "Home & Living", sales: 78, status: "out_of_stock" },
-  { _id: "6", name: "Leather Messenger Bag", price: 349, stock: 12, category: "Fashion", sales: 145, status: "active" },
-]
+const STORAGE_KEY = 'luxecart_inventory'
 
 const stats = [
   { title: "Total Products", value: "156", change: "+12", icon: Package },
@@ -21,7 +16,21 @@ const stats = [
 ]
 
 const Inventory = () => {
-  const [products, setProducts] = useState(initialProducts)
+  const [products, setProducts] = useState(() => {
+    const saved = storage.get(STORAGE_KEY, null)
+    return saved || initialProducts
+  })
+  
+  useEffect(() => {
+    storage.set(STORAGE_KEY, products)
+  }, [products])
+  
+  const stats = [
+    { title: "Total Products", value: products.length.toString(), change: "+" + (products.length - 6), icon: Package },
+    { title: "Total Sales", value: "$" + products.reduce((sum, p) => sum + (p.sales * p.price), 0).toLocaleString(), change: "+23%", icon: DollarSign },
+    { title: "Orders", value: products.reduce((sum, p) => sum + p.sales, 0).toLocaleString(), change: "+18%", icon: ShoppingBag },
+    { title: "Low Stock", value: products.filter(p => p.stock < 10 && p.stock > 0).length.toString(), change: "-2", icon: AlertTriangle },
+  ]
   const [searchQuery, setSearchQuery] = useState("")
   const [showAddModal, setShowAddModal] = useState(false)
   const [editingProduct, setEditingProduct] = useState(null)
@@ -40,7 +49,7 @@ const Inventory = () => {
   const handleAddProduct = (e) => {
     e.preventDefault()
     const newProduct = {
-      _id: Date.now().toString(),
+      _id: generateId(),
       ...formData,
       price: parseFloat(formData.price),
       stock: parseInt(formData.stock),

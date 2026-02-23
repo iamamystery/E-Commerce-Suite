@@ -1,24 +1,45 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Sparkles, RefreshCw, TrendingUp } from 'lucide-react'
 import ProductCard from './ProductCard'
+import { aiRecommendedProducts } from '../data'
+import { storage } from '../utils/storage'
 
-const aiRecommendedProducts = [
-  { _id: "ai1", name: "AI Curated: Smart Watch Pro", price: 449, image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400", category: "Electronics", rating: 4.9, reviews: 234, matchScore: 98 },
-  { _id: "ai2", name: "Personalized: Premium Headphones", price: 349, image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400", category: "Electronics", rating: 4.8, reviews: 189, matchScore: 95 },
-  { _id: "ai3", name: "Trending: Designer Bag", price: 899, image: "https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=400", category: "Fashion", rating: 4.9, reviews: 156, matchScore: 92 },
-  { _id: "ai4", name: "For You: Luxury Pen Set", price: 159, image: "https://images.unsplash.com/photo-1585336261022-681e348c5508?w=400", category: "Accessories", rating: 4.7, reviews: 98, matchScore: 90 },
-]
+const HISTORY_KEY = 'luxecart_browsing_history'
 
 const AIRecommendations = () => {
   const [isRefreshing, setIsRefreshing] = useState(false)
   const [products, setProducts] = useState(aiRecommendedProducts)
+  const [aiStats, setAiStats] = useState({
+    confidence: 94.2,
+    dataPoints: 2847,
+    lastUpdated: 'Just now'
+  })
+
+  // Simulate AI learning from browsing history
+  useEffect(() => {
+    const history = storage.get(HISTORY_KEY, [])
+    if (history.length > 0) {
+      const shuffled = [...aiRecommendedProducts].sort(() => Math.random() - 0.5)
+      setProducts(shuffled.slice(0, 4))
+      setAiStats(prev => ({
+        ...prev,
+        confidence: Math.floor(Math.random() * 10) + 90,
+        dataPoints: prev.dataPoints + history.length
+      }))
+    }
+  }, [])
 
   const handleRefresh = () => {
     setIsRefreshing(true)
     setTimeout(() => {
       const shuffled = [...aiRecommendedProducts].sort(() => Math.random() - 0.5)
       setProducts(shuffled)
+      setAiStats(prev => ({
+        ...prev,
+        confidence: Math.floor(Math.random() * 5) + 92,
+        lastUpdated: 'Just now'
+      }))
       setIsRefreshing(false)
     }, 1500)
   }

@@ -41,26 +41,6 @@ const features = [
   { icon: Clock, title: "24/7 Support", description: "Round-the-clock customer assistance" },
 ]
 
-const testimonials = [
-  { name: "Sarah Johnson", role: "Fashion Enthusiast", text: "The AI recommendations are spot on! Found exactly what I was looking for.", rating: 5 },
-  { name: "Michael Chen", role: "Tech Collector", text: "Premium quality products and exceptional service. Highly recommended!", rating: 5 },
-  { name: "Emma Williams", role: "Interior Designer", text: "Beautiful curation and fast shipping. LuxeCart is my go-to store.", rating: 5 },
-]
-
-const categories = [
-  { name: "Electronics", image: "https://images.unsplash.com/photo-1498049860654-af1a5c5668ba?w=400", count: 120 },
-  { name: "Fashion", image: "https://images.unsplash.com/photo-1445205170230-053b83016050?w=400", count: 85 },
-  { name: "Home & Living", image: "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?w=400", count: 64 },
-  { name: "Accessories", image: "https://images.unsplash.com/photo-1523170335258-f5ed11844a49?w=400", count: 42 },
-]
-
-const featuredProducts = [
-  { _id: "1", name: "Premium Wireless Headphones", price: 299, image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400", category: "Electronics", rating: 4.8, reviews: 124 },
-  { _id: "2", name: "Luxury Leather Watch", price: 599, image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400", category: "Accessories", rating: 4.9, reviews: 89 },
-  { _id: "3", name: "Designer Sunglasses", price: 249, image: "https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=400", category: "Accessories", rating: 4.7, reviews: 156 },
-  { _id: "4", name: "Smart Home Hub", price: 199, image: "https://images.unsplash.com/photo-1558089687-f282ffcbc126?w=400", category: "Electronics", rating: 4.6, reviews: 203 },
-]
-
 const Home = () => {
   const [currentSlide, setCurrentSlide] = useState(0)
 

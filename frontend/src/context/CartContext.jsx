@@ -1,9 +1,21 @@
-import { createContext, useContext, useState, useCallback } from 'react'
+import { createContext, useContext, useState, useCallback, useEffect } from 'react'
 
 const CartContext = createContext()
 
+const CART_STORAGE_KEY = 'luxecart_cart'
+
 export const CartProvider = ({ children }) => {
-  const [cartItems, setCartItems] = useState([])
+  const [cartItems, setCartItems] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem(CART_STORAGE_KEY)
+      return saved ? JSON.parse(saved) : []
+    }
+    return []
+  })
+
+  useEffect(() => {
+    localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cartItems))
+  }, [cartItems])
 
   const addToCart = useCallback((product, quantity = 1) => {
     setCartItems(prev => {
@@ -37,6 +49,7 @@ export const CartProvider = ({ children }) => {
 
   const clearCart = useCallback(() => {
     setCartItems([])
+    localStorage.removeItem(CART_STORAGE_KEY)
   }, [])
 
   const cartTotal = cartItems.reduce((total, item) => total + item.price * item.quantity, 0)
