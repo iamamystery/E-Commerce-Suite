@@ -6,6 +6,7 @@ import toast from 'react-hot-toast'
 import AnimatedBackground from '../components/AnimatedBackground'
 import ProductCard from '../components/ProductCard'
 import AIRecommendations from '../components/AIRecommendations'
+import { categories, featuredProducts, testimonials } from '../data'
 
 const heroSlides = [
   {
